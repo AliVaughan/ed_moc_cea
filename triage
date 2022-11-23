@@ -9,13 +9,21 @@ triage_by_hosp <- data.frame(triage_level = c("2","2","3","3","4","4","5","5"),
   mutate(across(where(is.character) & !n_patients, as.factor)) %>% 
   mutate(n_patients = as.numeric(n_patients))
 
-total_cohort <- sum(triage_by_hosp$n_patients)
-
-
 triage_by_hosp %>%
-  pivot_wider(names_from = triage_level,
-              values_from = n_patients) %>%
-  adorn_totals(where = c("col")) %>% as_tibble()
+  pivot_wider(id_cols = hosp, names_from = triage_level,
+              values_from = n_patients,
+              names_glue = "triage_{triage_level}") %>%
+  adorn_totals(where = c("row")) %>% 
+  as_tibble() %>%
+  mutate( perc_2 = triage_2 / total_cohort, perc_2=scales::percent(perc_2, scale=100, decimal.mark=".", accuracy = 0.1)) %>%
+  relocate(perc_2, .after = triage_2) %>%
+  mutate( perc_3 = triage_3 / total_cohort, perc_3=scales::percent(perc_3, scale=100, decimal.mark=".", accuracy = 0.1)) %>%
+  relocate(perc_3, .after = triage_3) %>%
+  mutate( perc_4 = triage_4 / total_cohort, perc_4=scales::percent(perc_4, scale=100, decimal.mark=".", accuracy = 0.1)) %>%
+  relocate(perc_4, .after = triage_4) %>%
+  mutate( perc_5 = triage_5 / total_cohort, perc_5=scales::percent(perc_5, scale=100, decimal.mark=".", accuracy = 0.1)) %>%
+  relocate(perc_5, .after = triage_5)
+
   
   
   
