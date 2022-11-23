@@ -1,0 +1,24 @@
+#triage
+library(tidyverse)
+library(janitor)
+
+triage_by_hosp <- data.frame(triage_level = c("2","2","3","3","4","4","5","5"),
+                             hosp = c("FSH", "RGH","FSH", "RGH","FSH", "RGH","FSH", "RGH"),
+                             n_patients = c("2","7","25","83","283","685","62", "153")
+                             ) %>% as_tibble() %>% 
+  mutate(across(where(is.character) & !n_patients, as.factor)) %>% 
+  mutate(n_patients = as.numeric(n_patients))
+
+total_cohort <- sum(triage_by_hosp$n_patients)
+
+
+triage_by_hosp %>%
+  pivot_wider(names_from = triage_level,
+              values_from = n_patients) %>%
+  adorn_totals(where = c("col")) %>% as_tibble()
+  
+  
+  
+  
+  
+  
